@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>States of Matter Quiz</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .main-container {
+      max-width: 900px;
+      width: 100%;
+      background-color: #1b1b1b;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(62, 193, 211, 0.3);
+      text-align: center;
+    }
+
+    h1, h2, h3 {
+      color: #3ec1d3;
+    }
+
+    input {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      background-color: #3ec1d3;
+      color: #111;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .option {
+      background-color: #222;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 10px 0;
+      transition: background-color 0.3s ease;
+    }
+
+    .option:hover {
+      background-color: #4fc3f7;
+    }
+
+    .correct {
+      background-color: #28a745 !important;
+    }
+
+    .incorrect {
+      background-color: #dc3545 !important;
+    }
+
+    .certificate {
+      background: #fff;
+      color: #000;
+      padding: 30px;
+      border-radius: 15px;
+      margin-top: 30px;
+    }
+
+    .certificate .name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .certificate h1 {
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container" id="start-screen">
+  <h1>Welcome to the States of Matter Quiz</h1>
+  <p>Please enter your first and last name to begin:</p>
+  <input type="text" id="first-name" placeholder="First Name" required />
+  <input type="text" id="last-name" placeholder="Last Name" required /><br>
+  <button onclick="startQuiz()">Start Quiz</button>
+</div>
+
+<script>
+  const questions = [
+    { question: "What is the state of matter of water at room temperature?", options: ["Solid", "Liquid", "Gas"], correctAnswer: "Liquid" },
+    { question: "Which state has particles that move freely and are far apart?", options: ["Solid", "Liquid", "Gas"], correctAnswer: "Gas" },
+    { question: "What is the state of matter of ice?", options: ["Solid", "Liquid", "Gas"], correctAnswer: "Solid" },
+    { question: "Which state has a fixed volume but no fixed shape?", options: ["Solid", "Liquid", "Gas"], correctAnswer: "Liquid" },
+    { question: "Which is an example of a gas?", options: ["Water", "Oxygen", "Ice"], correctAnswer: "Oxygen" },
+    { question: "What happens to particles in a solid when heated?", options: ["They move faster", "They move slower", "They stop moving"], correctAnswer: "They move faster" },
+    { question: "Which state has tightly packed particles that cannot move freely?", options: ["Solid", "Liquid", "Gas"], correctAnswer: "Solid" },
+    { question: "Which state takes the shape of its container?", options: ["Solid", "Liquid", "Gas"], correctAnswer: "Liquid" },
+    { question: "Which is an example of a liquid?", options: ["Water", "Air", "Metal"], correctAnswer: "Water" },
+    { question: "Which state has particles that can move past each other?", options: ["Solid", "Liquid", "Gas"], correctAnswer: "Liquid" }
+  ];
+
+  let currentQuestion = 0;
+  let correctAnswers = 0;
+  let incorrectAnswers = 0;
+  let fullName = "";
+
+  function startQuiz() {
+    const firstName = document.getElementById("first-name").value.trim();
+    const lastName = document.getElementById("last-name").value.trim();
+
+    if (!firstName || !lastName) {
+      alert("Please enter both your first and last name.");
+      return;
+    }
+
+    fullName = `${firstName} ${lastName}`;
+    loadQuestion();
+  }
+
+  function loadQuestion() {
+    const questionObj = questions[currentQuestion];
+    document.body.innerHTML = `
+      <div class="main-container">
+        <h1>Question ${currentQuestion + 1}</h1>
+        <p style="font-size: 1.5rem;">${questionObj.question}</p>
+        <div id="options"></div>
+        <p id="feedback" style="margin-top: 20px;"></p>
+        <button id="next-btn" style="display:none;">Next</button>
+      </div>
+    `;
+
+    const optionsDiv = document.getElementById("options");
+    questionObj.options.forEach(option => {
+      const div = document.createElement("div");
+      div.classList.add("option");
+      div.innerText = option;
+      div.onclick = () => checkAnswer(option);
+      optionsDiv.appendChild(div);
+    });
+
+    document.getElementById("next-btn").onclick = () => {
+      currentQuestion++;
+      if (currentQuestion < questions.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    };
+  }
+
+  function checkAnswer(selected) {
+    const correct = questions[currentQuestion].correctAnswer;
+    const options = document.querySelectorAll(".option");
+
+    options.forEach(option => {
+      option.style.pointerEvents = "none";
+      if (option.innerText === correct) option.classList.add("correct");
+      else if (option.innerText === selected) option.classList.add("incorrect");
+    });
+
+    if (selected === correct) {
+      correctAnswers++;
+      document.getElementById("feedback").innerText = "Correct!";
+      document.getElementById("feedback").style.color = "lightgreen";
+    } else {
+      incorrectAnswers++;
+      document.getElementById("feedback").innerText = `Incorrect! The correct answer was: ${correct}`;
+      document.getElementById("feedback").style.color = "#ff6666";
+    }
+
+    document.getElementById("next-btn").style.display = "inline-block";
+  }
+
+  function showResults() {
+    const date = new Date().toLocaleDateString();
+    const passed = correctAnswers >= 6;
+
+    const certificateHTML = `
+      <div class="main-container result-screen">
+        <h1>Quiz Complete! 🎉</h1>
+        <p>You got ${correctAnswers} correct and ${incorrectAnswers} incorrect.</p>
+        ${passed ? `
+          <h2>Congratulations, ${fullName}! 🏅</h2>
+          <p>You passed the quiz and earned a certificate!</p>
+          <div class="certificate">
+            <h1>Certificate of Achievement</h1>
+            <p>This certifies that</p>
+            <div class="name">${fullName}</div>
+            <p>has successfully completed the <strong>States of Matter Quiz</strong> with a score of ${correctAnswers}/10.</p>
+            <p class="date">Date: ${date}</p>
+            <p>Issued by: Science Department</p>
+          </div>
+        ` : `
+          <h2>Good effort, ${fullName}!</h2>
+          <p>Try again to earn your certificate. You need 6 or more correct answers.</p>
+        `}
+        <button onclick="window.location.href='indexs.html'">Go to Home Page</button>
+      </div>
+    `;
+
+    document.body.innerHTML = certificateHTML;
+  }
+</script>
+
+</body>
+</html>
+
+

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shooting States of Matter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #1e1e2f, #33334d);
+            color: white;
+            margin: 0;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        #game-area {
+            position: relative;
+            width: 80%;
+            height: 400px;
+            margin: 20px auto;
+            background: radial-gradient(circle, #3b3b4f 30%, #2a2a3a 100%);
+            border: 3px solid #888;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .target {
+            position: absolute;
+            padding: 10px 20px;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            animation: float linear;
+            font-weight: bold;
+            user-select: none;
+            box-shadow: 0 0 10px #000;
+            transition: transform 0.2s ease;
+        }
+
+        .target:hover {
+            transform: scale(1.1);
+        }
+
+        .Solid { background-color: #4caf50; }
+        .Liquid { background-color: #2196f3; }
+        .Gas { background-color: #ff9800; }
+        .NonState { background-color: #9e9e9e; }
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(400px); }
+        }
+
+        #score {
+            font-size: 22px;
+            margin-top: 15px;
+        }
+
+        .fact-bubble {
+            position: absolute;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.95);
+            color: #000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #fff;
+            font-size: 14px;
+            animation: fadeOut 2s forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-30px); }
+        }
+
+        #beam {
+            position: absolute;
+            width: 4px;
+            height: 50px;
+            background-color: red;
+            display: none;
+            z-index: 2;
+        }
+
+        #timer {
+            font-size: 24px;
+            color: #ffeb3b;
+            margin-top: 20px;
+        }
+
+        #game-over {
+            display: none;
+            font-size: 30px;
+            color: #f44336;
+            margin-top: 20px;
+        }
+
+        #restart-btn {
+            display: none;
+            margin-top: 15px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Shooting States of Matter 🔫</h1>
+    <p>Click the correct state to reveal a science fact and earn points!</p>
+    <div id="game-area"></div>
+    <div id="score">Score: 0</div>
+    <div id="timer">Time Left: 30s</div>
+    <div id="beam"></div>
+    <div id="game-over">Game Over! You missed an element.</div>
+    <button id="restart-btn">🔄 Restart Game</button>
+
+    <script>
+        const gameArea = document.getElementById('game-area');
+        const scoreElement = document.getElementById('score');
+        const timerElement = document.getElementById('timer');
+        const beam = document.getElementById('beam');
+        const gameOverElement = document.getElementById('game-over');
+        const restartButton = document.getElementById('restart-btn');
+
+        let score = 0;
+        let speed = 3;
+        let targetInterval = 2000;
+        let timer = 30;
+        let challengeMode = false;
+        let gameTimer = null;
+        let targets = [];
+
+        const states = [
+            { name: 'Solid', fact: 'Solids have a definite shape.' },
+            { name: 'Liquid', fact: 'Liquids take the shape of their container.' },
+            { name: 'Gas', fact: 'Gases expand to fill their container.' }
+        ];
+
+        const nonStates = [
+            { name: 'Cloud', penalty: -1 },
+            { name: 'Watermelon', penalty: -1 },
+            { name: 'Laptop', penalty: -1 },
+            { name: 'Elephant', penalty: -1 }
+        ];
+
+        function startGameTimer() {
+            gameTimer = setInterval(() => {
+                timer--;
+                timerElement.textContent = `Time Left: ${timer}s`;
+
+                if (timer === 0) {
+                    clearInterval(gameTimer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameOverElement.textContent = `Game Over! Final Score: ${score}`;
+            gameOverElement.style.display = 'block';
+            restartButton.style.display = 'inline-block';
+            gameArea.innerHTML = '';
+        }
+
+        function resetGame() {
+            gameOverElement.style.display = 'none';
+            restartButton.style.display = 'none';
+            score = 0;
+            timer = 30;
+            scoreElement.textContent = `Score: ${score}`;
+            timerElement.textContent = `Time Left: ${timer}s`;
+            challengeMode = false;
+            speed = 3;
+            targetInterval = 2000;
+            gameArea.innerHTML = '';
+            targets = [];
+            startGameTimer();
+        }
+
+        function createTarget() {
+            const isState = Math.random() > 0.2;
+            const targetData = isState ? states[Math.floor(Math.random() * states.length)] : nonStates[Math.floor(Math.random() * nonStates.length)];
+            const target = document.createElement('div');
+
+            target.className = `target ${isState ? targetData.name : 'NonState'}`;
+            target.textContent = targetData.name;
+
+            target.style.left = Math.random() * (gameArea.offsetWidth - 100) + 'px';
+            target.style.top = '0px';
+            target.style.animationDuration = `${speed}s`;
+
+            targets.push(target);
+
+            target.onclick = (e) => {
+                if (isState) {
+                    showBeam(e.clientX, e.clientY);
+                    showFactBubble(e.clientX, e.clientY, targetData.fact);
+
+                    score++;
+                    scoreElement.textContent = `Score: ${score}`;
+
+                    if (score >= 5 && !challengeMode) {
+                        challengeMode = true;
+                        speed = 2;
+                        targetInterval = 1500;
+                        alert('Challenge Mode Activated! Targets are faster!');
+                    }
+
+                    gameArea.removeChild(target);
+                    targets = targets.filter(t => t !== target);
+                } else {
+                    score += targetData.penalty;
+                    if (score < 0) score = 0;
+                    scoreElement.textContent = `Score: ${score}`;
+                    gameArea.removeChild(target);
+                    targets = targets.filter(t => t !== target);
+                }
+            };
+
+            gameArea.appendChild(target);
+
+            setTimeout(() => {
+                if (gameArea.contains(target)) {
+                    gameArea.removeChild(target);
+                    targets = targets.filter(t => t !== target);
+                }
+            }, speed * 1000);
+        }
+
+        function showFactBubble(x, y, text) {
+            const bubble = document.createElement('div');
+            bubble.className = 'fact-bubble';
+            bubble.style.left = (x - 60) + 'px';
+            bubble.style.top = (y - 60) + 'px';
+            bubble.textContent = text;
+            document.body.appendChild(bubble);
+
+            setTimeout(() => {
+                document.body.removeChild(bubble);
+            }, 2000);
+        }
+
+        function showBeam(x, y) {
+            beam.style.left = x + 'px';
+            beam.style.top = (y - 50) + 'px';
+            beam.style.display = 'block';
+
+            setTimeout(() => {
+                beam.style.display = 'none';
+            }, 150);
+        }
+
+        setInterval(() => {
+            if (!gameOverElement.style.display || gameOverElement.style.display === 'none') {
+                createTarget();
+            }
+        }, targetInterval);
+
+        restartButton.addEventListener('click', resetGame);
+
+        startGameTimer();
+    </script>
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Solid State Simulation</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 2rem;
+      margin-left: 0;
+    }
+    .sidebar a:hover {
+        color: #f1f1f1;
+        background-color: #555;  /* Background color when hovered */
+        transform: scale(1.1);    /* Slightly increase the size on hover */
+        transition: 0.3s ease-in-out;
+        }
+    .container {
+      position: relative;
+      width: 300px;
+      height: 400px;
+      background: #333;
+      border: 6px solid #888;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .particle {
+      width: 10px;
+      height: 10px;
+      background: cyan;
+      border-radius: 50%;
+      position: absolute;
+      transition: transform 2s ease-in-out, opacity 2s ease-in-out;
+    }
+
+    .stove {
+      width: 120px;
+      height: 130px;
+      background: linear-gradient(to bottom, #ccc, #444);
+      border: 2px solid #999;
+      border-radius: 60px 60px 20px 20px / 30px 30px 10px 10px;
+      position: relative;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-track {
+      width: 8px;
+      height: 70px;
+      background: linear-gradient(to bottom, red 33%, #888 33%, #888 66%, blue 66%);
+      position: relative;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    .slider-switch {
+      width: 30px;
+      height: 20px;
+      background: cyan;
+      border: 2px solid #000;
+      border-radius: 6px;
+      position: absolute;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    .flame, .ice {
+      position: absolute;
+      top: -50px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 3.4rem; /* Increased font size */
+      pointer-events: none;
+    }
+
+    .flame {
+      color: orange;
+      display: none;
+    }
+
+    .ice {
+      color: lightblue;
+      display: none;
+    }
+
+    .animate-flame {
+      display: block !important;
+      animation: rise 1s ease-out forwards;
+    }
+
+    .animate-ice {
+      display: block !important;
+      animation: rise 1s ease-out forwards;
+    }
+
+    @keyframes rise {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0px);
+        opacity: 1;
+      }
+    }
+
+    .stove-label {
+      position: absolute;
+      font-size: 0.8rem;
+      color: black;
+      font-weight: bold;
+    }
+
+    .stove-label.heat {
+      top: 12px;
+      left: 10px;
+    }
+
+    .stove-label.cool {
+      bottom: 12px;
+      left: 10px;
+    }
+
+    .description {
+      margin-top: 1rem;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #34495e; /* Softer color */
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+      z-index: 1000;
+      color: white;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5); /* Added shadow for effect */
+    }
+
+    .sidebar.open {
+      width: 250px; /* Width when open */
+      background-color: #0d2c41; /* New color when open */
+    }
+
+    .sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 20px;
+      color: white;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      color: #f1f1f1;
+    }
+
+    /* Close button (X) */
+    .sidebar .close-btn {
+      position: absolute;
+      top: 0;
+      right: 25px;
+      font-size: 36px;
+      margin-left: 50px;
+      cursor: pointer;
+      color: white;
+    }
+
+    /* Hamburger menu */
+    .hamburger {
+      font-size: 30px;
+      cursor: pointer;
+      color: white;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .hamburger div {
+      width: 30px;
+      height: 5px;
+      background-color: white;
+      margin: 6px 0;
+      transition: 0.4s;
+    }
+
+    .menu {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 50px;
+      left: 20px;
+    }
+
+    .menu a {
+      font-size: 20px;
+      color: white;
+      text-decoration: none;
+      padding: 8px 0;
+      background: #333;
+      border: 1px solid #555;
+      margin: 5px 0;
+    }
+
+    .menu a:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <h1>Solid State Simulator</h1>
+  <div class="container" id="chamber"></div>
+  <div class="stove">
+    <span class="stove-label heat">Heat</span>
+    <div class="slider-track">
+      <div class="slider-switch" id="stoveSwitch"></div>
+    </div>
+    <span class="stove-label cool">Cool</span>
+    <div class="flame" id="flame">🔥</div>
+    <div class="ice" id="ice">❄️</div>
+  </div>
+  <div class="description" id="description">Solid: Particles are tightly packed and vibrate in place.</div>
+
+  <!-- Hamburger Menu -->
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+
+  <!-- Sidebar Menu -->
+  <div class="sidebar" id="sidebar">
+      <a href="javascript:void(0)" class="close-btn" onclick="closeSidebar()">×</a>
+      <a href="indexs.html">🏠 Home</a>
+      <a href="solid.html">🧊 Solid</a>
+      <a href="liquid.html">💧 Liquid</a>
+      <a href="gas.html">💨 Gas</a>
+      <a href="quiz.html">📝 Quiz</a>
+      <a href="categories.html">🧪Categories Activity</a>
+      <a href="game .html">🧪Game</a>
+  </div>
+
+  <script>
+    const chamber = document.getElementById("chamber");
+    const desc = document.getElementById("description");
+    const stoveSwitch = document.getElementById("stoveSwitch");
+    const flame = document.getElementById("flame");
+    const ice = document.getElementById("ice");
+    const sidebar = document.getElementById("sidebar");
+
+    let particles = [];
+
+    function createParticles() {
+      chamber.innerHTML = "";
+      particles = [];
+      const total = 50;
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement("div");
+        dot.classList.add("particle");
+        chamber.appendChild(dot);
+        particles.push(dot);
+      }
+      arrangeParticlesSolid();
+    }
+
+    function arrangeParticlesSolid() {
+      const cols = 10;
+      const spacing = 20;
+      particles.forEach((p, i) => {
+        let row = Math.floor(i / cols);
+        let col = i % cols;
+        let x = col * spacing + 50;
+        let y = chamber.clientHeight - (row + 1) * spacing - 10;
+        p.style.transition = "transform 2s ease-in-out, opacity 2s ease-in-out";
+        p.style.transform = `translate(${x}px, ${y}px)`;
+        p.style.opacity = 1;
+      });
+    }
+
+    function evaporateParticles() {
+      particles.forEach(p => {
+        const x = Math.random() * 260 + 10; // stay inside width
+        const y = Math.random() * 250 + 30; // float randomly upward
+        p.style.transition = "transform 2s ease-in-out, opacity 2s ease-in-out";
+        p.style.transform = `translate(${x}px, ${y}px)`;
+        p.style.opacity = 1;
+      });
+    }
+
+    function showEffects(state) {
+      if (state === "heat") {
+        flame.classList.add("animate-flame");
+        ice.classList.remove("animate-ice");
+        desc.textContent = "Solid evaporated into gas. Particles float freely.";
+        evaporateParticles();
+      } else if (state === "cold") {
+        ice.classList.add("animate-ice");
+        flame.classList.remove("animate-flame");
+        desc.textContent = "Solid reformed. Particles are tightly packed.";
+        arrangeParticlesSolid();
+      }
+    }
+
+    function resetEffects() {
+      flame.classList.remove("animate-flame");
+      ice.classList.remove("animate-ice");
+    }
+
+    let isDragging = false;
+
+    stoveSwitch.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      const offsetY = e.clientY - stoveSwitch.getBoundingClientRect().top;
+      document.addEventListener("mousemove", onDrag);
+      document.addEventListener("mouseup", () => {
+        isDragging = false;
+        document.removeEventListener("mousemove", onDrag);
+        stoveSwitch.style.top = "25px";
+        resetEffects();
+      });
+
+      function onDrag(e) {
+        if (!isDragging) return;
+        const newTop = e.clientY - offsetY - stoveSwitch.parentElement.getBoundingClientRect().top;
+        const maxTop = stoveSwitch.parentElement.offsetHeight - stoveSwitch.offsetHeight;
+        const clampedTop = Math.max(0, Math.min(newTop, maxTop));
+        stoveSwitch.style.top = `${clampedTop}px`;
+
+        const percentage = clampedTop / maxTop;
+        if (percentage < 0.33) {
+          showEffects("heat"); // Top = heat
+        } else if (percentage > 0.66) {
+          showEffects("cold"); // Bottom = cold
+        }
+      }
+    });
+
+    function toggleMenu() {
+      sidebar.classList.toggle("open"); // Toggle open class
+    }
+
+    function closeMenu() {
+      sidebar.classList.remove("open");
+    }
+
+    createParticles();
+  </script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,310 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Liquid State Simulation</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      height: 100vh;
+      padding-top: 2rem;
+    }
+
+    .sidebar {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #0d2c41;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+      z-index: 1000;
+    }
+
+    .sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 20px;
+      color: white;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #555;
+    }
+
+    .sidebar .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    .hamburger {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 30px;
+      color: white;
+      cursor: pointer;
+      z-index: 1100;
+    }
+
+    .container {
+      position: relative;
+      width: 300px;
+      height: 400px;
+      background: #444;
+      border: 6px solid #888;
+      border-radius: 15px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .particle {
+      width: 10px;
+      height: 10px;
+      background: lightblue;
+      border-radius: 50%;
+      position: absolute;
+      transition: transform 2s ease-in-out, opacity 2s ease-in-out;
+    }
+
+    .stove {
+      width: 120px;
+      height: 130px;
+      background: linear-gradient(to bottom, #ccc, #444);
+      border: 2px solid #999;
+      border-radius: 60px 60px 20px 20px / 30px 30px 10px 10px;
+      position: relative;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-track {
+      width: 8px;
+      height: 70px;
+      background: linear-gradient(to bottom, red 33%, #888 33%, #888 66%, blue 66%);
+      position: relative;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    .slider-switch {
+      width: 30px;
+      height: 20px;
+      background: lightblue;
+      border: 2px solid #000;
+      border-radius: 6px;
+      position: absolute;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    .flame, .ice {
+      position: absolute;
+      top: -50px;
+      left: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 3.4rem;
+      pointer-events: none;
+    }
+
+    .flame {
+      color: orange;
+      display: none;
+    }
+
+    .ice {
+      color: lightblue;
+      display: none;
+    }
+
+    .animate-flame {
+      display: block !important;
+      animation: rise 1s ease-out forwards;
+    }
+
+    .animate-ice {
+      display: block !important;
+      animation: rise 1s ease-out forwards;
+    }
+
+    .stove-label {
+      position: absolute;
+      font-size: 0.8rem;
+      color: black;
+      font-weight: bold;
+    }
+
+    .stove-label.heat {
+      top: 12px;
+      left: 10px;
+    }
+
+    .stove-label.cool {
+      bottom: 12px;
+      left: 10px;
+    }
+
+    .description {
+      margin-top: 1rem;
+      max-width: 400px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hamburger" onclick="openSidebar()">☰</div>
+
+  <div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="close-btn" onclick="closeSidebar()">×</a>
+    <a href="indexs.html">🏠 Home</a>
+    <a href="solid.html">🧊 Solid</a>
+    <a href="liquid.html">💧 Liquid</a>
+    <a href="gas.html">💨 Gas</a>
+    <a href="quiz.html">📝 Quiz</a>
+    <a href="categories.html">🧪Categories Activity</a>
+    <a href="game .html">🧪Game</a>
+  </div>
+
+  <h1>Liquid State Simulator</h1>
+  <div class="container" id="chamber"></div>
+  <div class="stove">
+    <span class="stove-label heat">Heat</span>
+    <div class="slider-track">
+      <div class="slider-switch" id="stoveSwitch"></div>
+    </div>
+    <span class="stove-label cool">Cool</span>
+    <div class="flame" id="flame">🔥</div>
+    <div class="ice" id="ice">❄️</div>
+  </div>
+  <div class="description" id="description">Liquid: Particles slide past each other and take the shape of the container.</div>
+
+  <script>
+    function openSidebar() {
+      document.getElementById("mySidebar").style.width = "250px";
+      document.querySelector(".hamburger").style.display = "none";
+    }
+
+    function closeSidebar() {
+      document.getElementById("mySidebar").style.width = "0";
+      document.querySelector(".hamburger").style.display = "block";
+    }
+
+    const chamber = document.getElementById("chamber");
+    const desc = document.getElementById("description");
+    const stoveSwitch = document.getElementById("stoveSwitch");
+    const flame = document.getElementById("flame");
+    const ice = document.getElementById("ice");
+
+    let particles = [];
+
+    function createParticles() {
+      chamber.innerHTML = "";
+      particles = [];
+      const total = 40;
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement("div");
+        dot.classList.add("particle");
+        chamber.appendChild(dot);
+        particles.push(dot);
+        // Start particles closer to the bottom
+        dot.style.transform = `translate(${Math.random() * chamber.offsetWidth}px, ${chamber.offsetHeight - 20 + Math.random() * 50}px)`;
+      }
+    }
+
+    function showEffects(state) {
+      if (state === "heat") {
+        flame.classList.add("animate-flame");
+        ice.classList.remove("animate-ice");
+        desc.textContent = "Liquid particles evaporate and rise when heated.";
+        particles.forEach((p, i) => {
+          // Move particles upwards from the bottom
+          const maxX = chamber.offsetWidth - p.offsetWidth;
+          const maxY = chamber.offsetHeight - p.offsetHeight;
+          p.style.transform = `translate(${Math.random() * maxX}px, ${Math.random() * maxY * -0.7}px)`;
+          p.style.opacity = 0.7;
+        });
+      } else if (state === "cold") {
+        ice.classList.add("animate-ice");
+        flame.classList.remove("animate-flame");
+        desc.textContent = "Particles lose energy and slowly freeze downward.";
+        particles.forEach((p, i) => {
+          const row = i % 8;
+          const col = Math.floor(i / 8);
+          p.style.transform = `translate(${30 + row * 30}px, ${280 - col * 20}px)`;
+          p.style.opacity = 1;
+        });
+      }
+    }
+
+    function resetEffects() {
+      flame.classList.remove("animate-flame");
+      ice.classList.remove("animate-ice");
+    }
+
+    function randomFlow() {
+      particles.forEach(p => {
+        const x = 100 + Math.random() * 100;
+        const y = 250 + Math.random() * 100;
+        p.style.transform = `translate(${x}px, ${y}px)`;
+        p.style.opacity = 1;
+      });
+    }
+
+    let isDragging = false;
+
+    stoveSwitch.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      const offsetY = e.clientY - stoveSwitch.getBoundingClientRect().top;
+      document.addEventListener("mousemove", onDrag);
+      document.addEventListener("mouseup", () => {
+        isDragging = false;
+        document.removeEventListener("mousemove", onDrag);
+        stoveSwitch.style.top = "25px";
+        resetEffects();
+        randomFlow();
+      });
+
+      function onDrag(e) {
+        if (!isDragging) return;
+        const newTop = e.clientY - offsetY - stoveSwitch.parentElement.getBoundingClientRect().top;
+        const maxTop = stoveSwitch.parentElement.offsetHeight - stoveSwitch.offsetHeight;
+        const clampedTop = Math.max(0, Math.min(newTop, maxTop));
+        stoveSwitch.style.top = `${clampedTop}px`;
+
+        const percentage = clampedTop / maxTop;
+        if (percentage < 0.33) {
+          showEffects("heat");
+        } else if (percentage > 0.66) {
+          showEffects("cold");
+        }
+      }
+    });
+
+    createParticles();
+    randomFlow();
+  </script>
+</body>
+</html>
+
+

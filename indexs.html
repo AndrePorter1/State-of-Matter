@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>States of Matter</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #111;
+      color: white;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .main-container {
+      max-width: 900px;
+      width: 100%;
+      background-color: #1b1b1b;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(62, 193, 211, 0.3);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+    .slider-track {
+      width: 8px;
+      height: 70px;
+      background: linear-gradient(to bottom, red 33%, #888 33%, #888 66%, blue 66%);
+      position: relative;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+
+    .slider-switch {
+      width: 30px;
+      height: 20px;
+      background: lightblue;
+      border: 2px solid #000;
+      border-radius: 6px;
+      position: absolute;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      cursor: pointer;
+    }
+
+    .sidebar {
+      height: 100%;
+      width: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: #0d2c41;
+      overflow-x: hidden;
+      transition: 0.5s;
+      padding-top: 60px;
+      z-index: 1000;
+    }
+
+    .sidebar a {
+      padding: 8px 8px 8px 32px;
+      text-decoration: none;
+      font-size: 20px;
+      color: white;
+      display: block;
+      transition: 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #555;
+    }
+
+    .sidebar .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      font-size: 30px;
+      cursor: pointer;
+    }
+
+    
+    .hamburger {
+      font-size: 30px;
+      cursor: pointer;
+      color: white;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
+
+    .hamburger div {
+      width: 30px;
+      height: 5px;
+      background-color: white;
+      margin: 6px 0;
+      transition: 0.4s;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #3ec1d3;
+      text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.6);
+    }
+
+    h2 {
+      margin-top: 2rem;
+      font-size: 2.5rem;
+      color: #4fc3f7;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    }
+
+    p {
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .step {
+      display: none;
+      animation: fadeIn 0.6s ease-in-out forwards;
+    }
+
+    .step.active {
+      display: block;
+    }
+
+    .navigation-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      background-color: purple;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .nav-btn:hover {
+      background-color: #645764;
+      transform: scale(1.05);
+    }
+
+  p {
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+    line-height: 2; /* Double line spacing */
+  }
+    
+
+    img {
+      max-width: 100%;
+      border-radius: 15px;
+      margin: 1.5rem 0;
+    }
+
+    .sim-btns img {
+      width: 100px;
+      margin-top: 0.5rem;
+    }
+
+    
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="hamburger" onclick="openSidebar()">☰</div>
+
+  <div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="close-btn" onclick="closeSidebar()">×</a>
+    <a href="indexs.html">🏠 Home</a>
+    <a href="solid.html">🧊 Solid</a>
+    <a href="liquid.html">💧 Liquid</a>
+    <a href="gas.html">💨 Gas</a>
+    <a href="quiz.html">📝 Quiz</a>
+    <a href="categories.html">🧪Categories Activity</a>
+    <a href="game .html">🧪Game</a>
+  </div>
+
+  <div class="main-container">
+    <div class="step active">
+      <h1>States of Matter</h1>
+      <p>Welcome to the interactive States of Matter Simulation! Explore the behaviors of matter in its different states: Solid, Liquid, and Gas, through an engaging visual experience.</p>
+    </div>
+    <div class="step">
+      <h2>Watch Matter in Action</h2>
+      <p>Watch this video to see a model of how 
+        particles are arranged in solids, liquids and gases:</p>
+      <video controls width="100%" style="border-radius: 15px; box-shadow: 0 0 15px rgba(62, 193, 211, 0.2); margin-top: 1rem;">
+        <source src="Img/Recording 2025-04-21 231859.mp4" type="video/mp4" />
+        
+      </video>
+    </div>
+
+    <div class="step">
+      <h2>What is Matter?</h2>
+      <p>Matter is anything that takes up space and has mass. It consists of tiny particles, such as ions, atoms, or molecules.</p>
+      <p>These particles come together to form different <strong>states of matter</strong>, which are determined by how they are arranged and how much energy they have.</p>
+    </div>
+
+    <div class="step">
+      <h2>Solid</h2>
+      <img src="Img/soild .png" alt="Solid State" />
+      <p>A solid has a fixed shape and volume, with particles closely packed together. The particles vibrate but do not move freely, giving solids their hardness.</p>
+      <p><strong>Examples:</strong> Ice, rocks, wood</p>
+    </div>
+
+    <div class="step">
+      <h2>Liquid</h2>
+      <img src="Img/Liquid.png" alt="Liquid State" />
+      <p>A liquid has no fixed shape but has a fixed volume. Its particles can move past one another, allowing it to flow and take the shape of its container.</p>
+      <p><strong>Examples:</strong> Water, juice, milk</p>
+    </div>
+
+    <div class="step">
+      <h2>Gas</h2>
+      <img src="Img/Gas.png" alt="Gas State" />
+      <p>A gas has no fixed shape or volume, and its particles are spread far apart, moving quickly in all directions. This is why gases can expand or compress easily.</p>
+      <p><strong>Examples:</strong> Oxygen, carbon dioxide, steam</p>
+    </div>
+
+    <div class="step">
+      <h2>Change of State</h2>
+      <p>Matter can change between solid, liquid, and gas states through a process known as <strong>phase change</strong>.</p>
+      <img src="Img/Phase-Change.jpg" alt="Phase Change Diagram" />
+    </div>
+
+    <div class="step">
+      <h2>Explore Simulators</h2>
+      <p>Please click each element below to explore the simulators:</p>
+      <div class="navigation-buttons sim-btns">
+        <a class="nav-btn" href="solid.html">
+          🧊 Solid<br>
+          <img src="Img/soild1 .png" alt="Solid Simulator" />
+        </a>
+        <a class="nav-btn" href="liquid.html">
+          💧 Liquid<br>
+          <img src="Img/liqued2.png" alt="Liquid Simulator" />
+        </a>
+        <a class="nav-btn" href="gas.html">
+          💨 Gas<br>
+          <img src="Img/Gas2.png" alt="Gas Simulator" />
+        </a>
+      </div>
+    </div>
+
+    <div class="step">
+      <h2>Ready to Test Yourself?</h2>
+      <p>Take the quiz to see what you know about solids, liquids, and gases!</p>
+      <img src="Img/quizimage.png" alt="Quiz" />
+      <a class="nav-btn" href="quiz.html">📝 Click to Take the Quiz</a>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="navigation-buttons">
+      <button class="nav-btn" onclick="prevStep()">⬅️ Back</button>
+      <button class="nav-btn" onclick="nextStep()">Next ➡️</button>
+    </div>
+  </div>
+
+  <script>
+     function openSidebar() {
+      document.getElementById("mySidebar").style.width = "250px";
+      document.querySelector(".hamburger").style.display = "none";
+    }
+
+    function closeSidebar() {
+      document.getElementById("mySidebar").style.width = "0";
+      document.querySelector(".hamburger").style.display = "block";
+    }
+    let currentStep = 0;
+    const steps = document.querySelectorAll('.step');
+
+    function showStep(index) {
+      steps.forEach((step, i) => {
+        step.classList.toggle('active', i === index);
+      });
+    }
+
+    function nextStep() {
+      if (currentStep < steps.length - 1) {
+        currentStep++;
+        showStep(currentStep);
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 0) {
+        currentStep--;
+        showStep(currentStep);
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+  
+
+
+
+
+
