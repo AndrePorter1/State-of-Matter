@@ -24,6 +24,117 @@
       margin: 0.5rem 0;
       font-size: 1.2rem;
     }
+    @media screen and (max-width: 768px) {
+      body {
+        padding: 1rem;
+      }
+      .main-container {
+        padding: 1rem;
+        flex-direction: column;
+      }
+      .step {
+        margin-bottom: 2rem;
+      }
+      .slider-track {
+        width: 6px;
+        height: 50px;
+      }
+      .slider-switch {
+        width: 25px;
+        height: 15px;
+      }
+      .speaker-icon {
+        width: 80px;
+        top: 10px;
+        right: 10px;
+      }
+      .speaker-icon img {
+        width: 150%;
+        height: auto;
+      }
+      .dropdown-container {
+        width: 100%;
+      }
+      .dropdown {
+        width: 100%;
+      }
+      .dropdown-button {
+        font-size: 16px;
+      }
+      .dropdown-content {
+        font-size: 14px;
+      }
+      .game-container {
+        padding: 20px;
+        max-width: 100%;
+      }
+      .game-container h1 {
+        font-size: 2rem;
+      }
+      .game-container h2 {
+        font-size: 1.5rem;
+      }
+      .game-container p {
+        font-size: 1.2rem;
+      }
+      .game-container ul {
+        font-size: 1rem;
+      }
+      .game-container li {
+        font-size: 1rem;
+      }
+      .game-container .instructions {
+        font-size: 1rem;
+      }
+      .game-container .score {
+        font-size: 1rem;
+      }
+      .game-container .result {
+        font-size: 1.2rem;
+      }
+      .game-container .option-card {
+        font-size: 1rem;
+        padding: 10px 15px;
+      }
+      .game-container .option-card:hover {
+        transform: scale(1.05);
+      }
+      .game-container .question {
+        font-size: 1.5rem;
+      }
+      .game-container .options {
+        gap: 10px;
+      }
+      .game-container .result {
+        font-size: 1.5rem;
+      }
+      .game-container .score {
+        font-size: 1.2rem;
+      }
+      .game-container .closeBtn {
+        font-size: 1.2rem;
+        padding: 8px 8px;
+      }
+      .game-container .closeBtn:hover {
+        padding: 8px 8px;
+      }
+      .game-container .closeBtn:focus {
+        outline: none;
+      }
+      .game-container .closeBtn:focus-visible {
+        outline: 2px solid #3ec1d3;
+        outline-offset: 2px;
+      }
+      .game-container .closeBtn:active:not(:focus-visible) {
+        outline: none;
+      }
+      .game-container .closeBtn:active {
+        transform: scale(0.9);
+        transition: transform 0.1s;
+      }
+
+      
+    }
     .phaswe-change h2 {
       font-size: 2rem;
       margin: 1rem 0;
@@ -471,25 +582,25 @@
   <div class="main-container">
     <div class="step active">
       <button class="speaker-icon" onclick="playAudio('introAudio')">🔊</button>
-      <audio id="introAudio" src="audio/Introduction.m4a"></audio>
+      <audio id="introAudio" src="Introduction.m4a"></audio>
       <h1>States of Matter</h1>
       <p>Welcome to the interactive States of Matter Simulation! Explore the behaviors of matter in its different states: Solid, Liquid, and Gas, through an engaging visual experience.</p>
     </div>
     <div class="step">
       <button class="speaker-icon" onclick="playAudio('VideoAudio')">🔊</button>
-      <audio id="VideoAudio" src="audio/Video Intruction.m4a"></audio>
+      <audio id="VideoAudio" src="Video Intruction.m4a"></audio>
       <h2>Watch Matter in Action</h2>
       <p>Watch this video to see a model of how 
         particles are arranged in solids, liquids and gases:</p>
       <video controls width="100%" style="border-radius: 15px; box-shadow: 0 0 15px rgba(62, 193, 211, 0.2); margin-top: 1rem;">
-        <source src="Img/Recording 2025-04-21 231859.mp4" type="video/mp4" />
+        <source src="Recording 2025-04-21 231859.mp4" type="video/mp4" />
         
       </video>
     </div>
 
     <div class="step">
       <button class="speaker-icon" onclick="playAudio('definition')">🔊</button></h2>
-      <audio id="definition" src="audio/What is matter.m4a"></audio>
+      <audio id="definition" src="What is matter.m4a"></audio>
       <h2>What is Matter?</h2>
       <p>Matter is anything that takes up space and has mass. It consists of tiny particles, such as ions, atoms, or molecules.</p>
       <p>These particles come together to form different <strong>states of matter</strong>, which are determined by how they are arranged and how much energy they have.</p>
@@ -498,8 +609,8 @@
     <div class="step">
       <h2>Solid</h2>
       <button class="speaker-icon" onclick="playAudio('solidAudio')">🔊</button></h2>
-      <audio id="solidAudio" src="audio/Soild.m4a"></audio>
-      <img src="Img/soild .png" alt="Solid State" />
+      <audio id="solidAudio" src="Soild.m4a"></audio>
+      <img src="soild .png" alt="Solid State" />
       <p>A solid has a fixed shape and volume, with particles closely packed together. The particles vibrate but do not move freely, giving solids their hardness.</p>
       <p><strong>Examples:</strong> Ice, rocks, wood</p>
     </div>
@@ -507,8 +618,8 @@
     <div class="step">
       <h2>Liquid</h2>
       <button class="speaker-icon" onclick="playAudio('Liquid')">🔊</button></h2>
-      <audio id="Liquid" src="audio/Liquid.m4a"></audio>
-      <img src="Img/Liquid.png" alt="Liquid State" />
+      <audio id="Liquid" src="Liquid.m4a"></audio>
+      <img src="Liquid.png" alt="Liquid State" />
       <p>A liquid has no fixed shape but has a fixed volume. Its particles can move past one another, allowing it to flow and take the shape of its container.</p>
       <p><strong>Examples:</strong> Water, juice, milk</p>
     </div>
@@ -516,18 +627,18 @@
     <div class="step">
       <h2>Gas</h2>
       <button class="speaker-icon" onclick="playAudio('Gas')">🔊</button></h2>
-      <audio id="Gas" src="audio/Gas.m4a"></audio>
-      <img src="Img/Gas.png" alt="Gas State" />
+      <audio id="Gas" src="Gas.m4a"></audio>
+      <img src="Gas.png" alt="Gas State" />
       <p>A gas has no fixed shape or volume, and its particles are spread far apart, moving quickly in all directions. This is why gases can expand or compress easily.</p>
       <p><strong>Examples:</strong> Oxygen, carbon dioxide, steam</p>
     </div>
 
     <div class="step">
       <button class="speaker-icon" onclick="playAudio('Phase-Change')">🔊</button></h2>
-      <audio id="Phase-Change" src="audio/Phase changes.m4a"></audio>
+      <audio id="Phase-Change" src="Phase changes.m4a"></audio>
       <h2>Phase Changes</h2>
       <p>Matter can change between solid, liquid, and gas states through a process known as <strong>phase change</strong>.</p>
-      <img id="Phase-Change" src="Img/Phase-Change.jpg" alt="Phase Change Diagram" />
+      <img id="Phase-Change" src="Phase-Change.jpg" alt="Phase Change Diagram" />
       <div class="dropdown-container">
 
         <div class="dropdown">
@@ -572,7 +683,7 @@
             </div>
         </div>
 
-        <h1 id="game">Phase Change Challenge</h1>
+        <h2 id="game">Phase Change Challenge</h2>
 
 
 
@@ -602,31 +713,31 @@
 
     <div class="step">
       <button class="speaker-icon" onclick="playAudio('Simulation')">🔊</button></h2>
-      <audio id="Simulation" src="audio/Explore Simulators.m4a"></audio>
+      <audio id="Simulation" src="Explore Simulators.m4a"></audio>
       <h2>Explore Simulators</h2>
       <p>Please click each element below to explore the simulators:</p>
       <div class="navigation-buttons sim-btns">
         <a class="nav-btn" href="solid.html">
           🧊 Solid<br>
-          <img src="Img/soild1 .png" alt="Solid Simulator" />
+          <img src="soild1 .png" alt="Solid Simulator" />
         </a>
         <a class="nav-btn" href="liquid.html">
           💧 Liquid<br>
-          <img src="Img/liqued2.png" alt="Liquid Simulator" />
+          <img src="liqued2.png" alt="Liquid Simulator" />
         </a>
         <a class="nav-btn" href="gas.html">
           💨 Gas<br>
-          <img src="Img/Gas2.png" alt="Gas Simulator" />
+          <img src="Gas2.png" alt="Gas Simulator" />
         </a>
       </div>
     </div>
 
     <div class="step">
       <button class="speaker-icon" onclick="playAudio('Quiz')">🔊</button></h2>
-      <audio id="Quiz" src="audio/Quiz.m4a"></audio>
+      <audio id="Quiz" src="Quiz.m4a"></audio>
       <h2>Ready to Test Yourself?</h2>
       <p>Take the quiz to see what you know about solids, liquids, and gases!</p>
-      <img src="Img/quizimage.png" alt="Quiz" />
+      <img src="quizimage.png" alt="Quiz" />
       <a class="nav-btn" href="quiz.html">📝 Click to Take the Quiz</a>
     </div>
 
