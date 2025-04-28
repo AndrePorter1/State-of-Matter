@@ -277,32 +277,48 @@
 
     let isDragging = false;
 
-    stoveSwitch.addEventListener("mousedown", (e) => {
-      isDragging = true;
-      const offsetY = e.clientY - stoveSwitch.getBoundingClientRect().top;
-      document.addEventListener("mousemove", onDrag);
-      document.addEventListener("mouseup", () => {
-        isDragging = false;
-        document.removeEventListener("mousemove", onDrag);
-        stoveSwitch.style.top = "25px";
-        resetEffects();
-      });
+    function getEventY(e) {
+  return e.touches ? e.touches[0].clientY : e.clientY;
+}
 
-      function onDrag(e) {
-        if (!isDragging) return;
-        const newTop = e.clientY - offsetY - stoveSwitch.parentElement.getBoundingClientRect().top;
-        const maxTop = stoveSwitch.parentElement.offsetHeight - stoveSwitch.offsetHeight;
-        const clampedTop = Math.max(0, Math.min(newTop, maxTop));
-        stoveSwitch.style.top = `${clampedTop}px`;
+function startDrag(e) {
+  e.preventDefault();
+  isDragging = true;
+  const offsetY = getEventY(e) - stoveSwitch.getBoundingClientRect().top;
 
-        const percentage = clampedTop / maxTop;
-        if (percentage < 0.33) {
-          showEffects("heat");
-        } else if (percentage > 0.66) {
-          showEffects("cold");
-        }
-      }
-    });
+  function onDrag(e) {
+    if (!isDragging) return;
+    const newTop = getEventY(e) - offsetY - stoveSwitch.parentElement.getBoundingClientRect().top;
+    const maxTop = stoveSwitch.parentElement.offsetHeight - stoveSwitch.offsetHeight;
+    const clampedTop = Math.max(0, Math.min(newTop, maxTop));
+    stoveSwitch.style.top = `${clampedTop}px`;
+
+    const percentage = clampedTop / maxTop;
+    if (percentage < 0.33) {
+      showEffects("heat");
+    } else if (percentage > 0.66) {
+      showEffects("cold");
+    }
+  }
+
+  function endDrag() {
+    isDragging = false;
+    document.removeEventListener("mousemove", onDrag);
+    document.removeEventListener("mouseup", endDrag);
+    document.removeEventListener("touchmove", onDrag);
+    document.removeEventListener("touchend", endDrag);
+    stoveSwitch.style.top = "25px";
+    resetEffects();
+  }
+
+  document.addEventListener("mousemove", onDrag);
+  document.addEventListener("mouseup", endDrag);
+  document.addEventListener("touchmove", onDrag);
+  document.addEventListener("touchend", endDrag);
+}
+
+stoveSwitch.addEventListener("mousedown", startDrag);
+stoveSwitch.addEventListener("touchstart", startDrag);
 
     createParticles();
     moveParticles();
